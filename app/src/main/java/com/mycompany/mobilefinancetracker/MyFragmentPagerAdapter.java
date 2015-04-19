@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    private String tabTitles[] = new String[] {"Accounts","Expenses","Calendar","Statistics"};
+    private String tabTitles[] = new String[] {"Accounts","Today","View","Statistics"};
     private Context context;
 
     public MyFragmentPagerAdapter(FragmentManager fm, Context context) {

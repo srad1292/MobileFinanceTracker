@@ -40,6 +40,15 @@
             android:theme="@style/AppTheme"
         />
 
+        <activity android:name=".Habits"
+            android:label="Habits"
+            android:theme="@style/AppTheme"
+        />
+
+        <activity android:name=".ExpenseViewer"
+            android:label="ExpenseViewer"
+            android:theme="@style/AppTheme"
+        />
 
 
 

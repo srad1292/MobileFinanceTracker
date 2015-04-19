@@ -144,20 +144,25 @@ public class TodaysExpenses extends Fragment {
             do {
                 cur_account = headingCursor.getString(headingCursor.getColumnIndex("account"));
                 if(!doneAccounts.contains(cur_account)) {
-                    doneAccounts.add(cur_account);
-                    TextView acctN = new TextView(getActivity());
-                    textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    acctN.setLayoutParams(textParams);
-                    acctN.setText(cur_account);
-                    acctN.setGravity(Gravity.CENTER);
-                    expenses.addView(acctN);
+
                     if (e_curs != null && e_curs.moveToFirst()) {
+                        Boolean head = false;
                         do {
                             String year = e_curs.getString(e_curs.getColumnIndex("year"));
                             String month = e_curs.getString(e_curs.getColumnIndex("month"));
                             String day = e_curs.getString(e_curs.getColumnIndex("day"));
                             if(e_curs.getString(e_curs.getColumnIndex("account")).equals(cur_account) && year.equals(dy)
                                     && month.equals(dm) && day.equals(dd)) {
+                                if(!head) {
+                                    doneAccounts.add(cur_account);
+                                    TextView acctN = new TextView(getActivity());
+                                    textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    acctN.setLayoutParams(textParams);
+                                    acctN.setText(cur_account);
+                                    acctN.setGravity(Gravity.CENTER);
+                                    expenses.addView(acctN);
+                                    head = true;
+                                }
                                 String id = e_curs.getString(e_curs.getColumnIndex("_id"));
                                 String account = e_curs.getString(e_curs.getColumnIndex("account"));
                                 String amount = e_curs.getString(e_curs.getColumnIndex("amount"));
@@ -165,10 +170,19 @@ public class TodaysExpenses extends Fragment {
                                 String location = e_curs.getString(e_curs.getColumnIndex("location"));
                                 if(amount.contains(".")){
                                     int position = amount.indexOf(".");
-                                    String v1 = amount.substring(0, position);
-                                    String v2 = amount.substring(position+1);
-                                    total = total + Integer.parseInt(v1);
-                                    double dec = (double) Integer.parseInt(v2);
+
+                                    String de_st;
+                                    if(amount.startsWith(".")) {
+                                        de_st = amount.substring(1);
+                                    }
+
+                                    else{
+                                        String v1 = amount.substring(0, position);
+                                        de_st = amount.substring(position+1);
+                                        total = total + Integer.parseInt(v1);
+                                    }
+
+                                    double dec = (double) Integer.parseInt(de_st);
                                     BigDecimal bd = new BigDecimal(dec/100.0).setScale(2,RoundingMode.HALF_UP);
                                     total = total + (bd.doubleValue());
                                 }
