@@ -21,15 +21,13 @@ import static com.mycompany.mobilefinancetracker.R.layout.add_account;
  */
 public class EditExpense extends Activity implements AdapterView.OnItemSelectedListener{
     private String id;
-    private String year;
-    private String month;
-    private String day;
-    private String expenseAccount = "";
+    private String expenseAccount;
     private AccountsController ac;
     private Cursor c;
     private EditText amountIN;
     private EditText locationIN;
     private EditText typeIN;
+    private EditText yearIN, monthIN, dayIN;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,9 +35,8 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         Intent activityThatCalled = getIntent();
         String previousActivity = activityThatCalled.getExtras().getString("callingActivity");
         id = activityThatCalled.getExtras().getString("id");
-        year = activityThatCalled.getExtras().getString("year");
-        month = activityThatCalled.getExtras().getString("month");
-        day = activityThatCalled.getExtras().getString("day");
+
+        expenseAccount = activityThatCalled.getExtras().getString("account");
         ac = new AccountsController(this);
         ac.open();
         c = ac.fetch();
@@ -54,13 +51,21 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
         dropdown.setAdapter(adapter);
+        dropdown.setSelection(adapter.getPosition(expenseAccount));
         dropdown.setOnItemSelectedListener(this);
         amountIN = (EditText) findViewById(R.id.edit_expense_amount);
         locationIN = (EditText) findViewById(R.id.edit_expense_location);
         typeIN = (EditText) findViewById(R.id.edit_expense_type);
+        yearIN = (EditText) findViewById(R.id.edit_text_year);
+        monthIN = (EditText) findViewById(R.id.edit_text_month);
+        dayIN = (EditText) findViewById(R.id.edit_text_day);
+
         amountIN.setText(activityThatCalled.getExtras().getString("amount"));
         locationIN.setText(activityThatCalled.getExtras().getString("location"));
         typeIN.setText(activityThatCalled.getExtras().getString("type"));
+        yearIN.setText(activityThatCalled.getExtras().getString("year"));
+        monthIN.setText(activityThatCalled.getExtras().getString("month"));
+        dayIN.setText(activityThatCalled.getExtras().getString("day"));
     }
 
 
@@ -77,11 +82,11 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         goingBack.putExtra("exp_amount",expenseAmount);
         goingBack.putExtra("exp_location",expenseLocation);
         goingBack.putExtra("exp_type",expenseType);
-        goingBack.putExtra("year",year);
-        goingBack.putExtra("month",month);
-        goingBack.putExtra("day",day);
+        goingBack.putExtra("year",String.valueOf(yearIN.getText()));
+        goingBack.putExtra("month",String.valueOf(monthIN.getText()));
+        goingBack.putExtra("day",String.valueOf(dayIN.getText()));
         goingBack.putExtra("value","2");
-
+        c.close();
         setResult(RESULT_OK,goingBack);
 
         finish();
@@ -92,7 +97,9 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
     public void onCancelClicked(View view){
         Intent goingBack = new Intent();
         goingBack.putExtra("value","3");
+        c.close();
         setResult(RESULT_OK,goingBack);
+
         finish();
     }
 
@@ -100,7 +107,9 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         Intent goingBack = new Intent();
         goingBack.putExtra("id",id);
         goingBack.putExtra("value","4");
+        c.close();
         setResult(RESULT_OK,goingBack);
+
         finish();
     }
 

@@ -10,10 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Calendar;
+import java.util.*;
 
 import static com.mycompany.mobilefinancetracker.R.layout.add_account;
 
@@ -28,6 +26,8 @@ public class AddExpense extends Activity implements AdapterView.OnItemSelectedLi
     private EditText amountIN;
     private EditText locationIN;
     private EditText typeIN;
+    private EditText yearIN, monthIN, dayIN;
+    Calendar cal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +35,7 @@ public class AddExpense extends Activity implements AdapterView.OnItemSelectedLi
         setContentView(R.layout.add_expense);
         Intent activityThatCalled = getIntent();
         String previousActivity = activityThatCalled.getExtras().getString("callingActivity");
+        cal = Calendar.getInstance();
         ac = new AccountsController(this);
         ac.open();
         c = ac.fetch();
@@ -55,6 +56,13 @@ public class AddExpense extends Activity implements AdapterView.OnItemSelectedLi
         amountIN = (EditText) findViewById(R.id.add_expense_amount);
         locationIN = (EditText) findViewById(R.id.add_expense_location);
         typeIN = (EditText) findViewById(R.id.add_expense_type);
+        yearIN = (EditText) findViewById(R.id.edit_text_year);
+        monthIN = (EditText) findViewById(R.id.edit_text_month);
+        dayIN = (EditText) findViewById(R.id.edit_text_day);
+        int cal_mon = cal.get(java.util.Calendar.MONTH) + 1;
+        yearIN.setText(String.valueOf(cal.get(java.util.Calendar.YEAR)));
+        monthIN.setText(String.valueOf(cal_mon));
+        dayIN.setText(String.valueOf(cal.get(java.util.Calendar.DATE)));
 
     }
 
@@ -72,7 +80,11 @@ public class AddExpense extends Activity implements AdapterView.OnItemSelectedLi
         goingBack.putExtra("exp_amount",expenseAmount);
         goingBack.putExtra("exp_location",expenseLocation);
         goingBack.putExtra("exp_type",expenseType);
+        goingBack.putExtra("year",String.valueOf(yearIN.getText()));
+        goingBack.putExtra("month",String.valueOf(monthIN.getText()));
+        goingBack.putExtra("day",String.valueOf(dayIN.getText()));
         goingBack.putExtra("value","1");
+        c.close();
         setResult(RESULT_OK,goingBack);
 
         finish();
@@ -83,7 +95,9 @@ public class AddExpense extends Activity implements AdapterView.OnItemSelectedLi
     public void onCancelClicked(View view){
         Intent goingBack = new Intent();
         goingBack.putExtra("value","3");
+        c.close();
         setResult(RESULT_OK,goingBack);
+
         finish();
     }
 

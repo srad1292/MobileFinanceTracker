@@ -141,6 +141,12 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        ac.close();
+    }
+
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch(parent.getId()){
             case R.id.account_spinner:

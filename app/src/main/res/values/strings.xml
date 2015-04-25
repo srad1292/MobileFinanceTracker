@@ -29,8 +29,9 @@
     <string name="e_type_hint">Food, Education, Gas</string>
     <string name="e_amount_hint">25, 45.52</string>
     <string name="location_hint">Target</string>
-    <string name="start">Start Date</string>
-    <string name="end">End Date</string>
+    <string name="start">Start Date:</string>
+    <string name="end">End Date:</string>
+    <string name="date">Date: </string>
     <string name="year">Year</string>
     <string name="month">Month</string>
     <string name="day">Day</string>

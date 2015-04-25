@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,10 +42,10 @@ public class TodaysExpenses extends Fragment {
         //accts = new AccountsController(getActivity());
         //accts.open();
         exps = new ExpensesController(getActivity());
-        exps.open();
-        headingCursor = exps.getAccounts();
+        //exps.open();
+        //headingCursor = exps.getAccounts();
         //a_curs = accts.fetch();
-        e_curs = exps.fetch();
+        //e_curs = exps.fetch();
         total = 0.0;
 
         return rootView;
@@ -54,24 +55,18 @@ public class TodaysExpenses extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        exps.open();
         if (!data.getStringExtra("value").equals("3")) {
             if (data.getStringExtra("value").equals("1")) {
                 String a_name = data.getStringExtra("exp_account");
                 String e_amount = data.getStringExtra("exp_amount");
                 String e_type = data.getStringExtra("exp_type");
                 String e_location = data.getStringExtra("exp_location");
-                String e_year = String.valueOf(cal.get(Calendar.YEAR));
-                String e_month = String.valueOf(cal.get(Calendar.MONTH));
-                String e_day = String.valueOf(cal.get(Calendar.DATE));
+                String e_year = data.getStringExtra("year");
+                String e_month = data.getStringExtra("month");
+                String e_day = data.getStringExtra("day");
 
-                if(a_name != null){
-                    Log.i("name",a_name);
-                }else{
-                    Log.i("name","name is null");
-                }
-                Log.i("year",e_year);
-                Log.i("month",e_month);
-                Log.i("day",e_day);
+
                 exps.insert(a_name, e_amount, e_type, e_location, e_year, e_month, e_day);
 
             } else if (data.getStringExtra("value").equals("2")){
@@ -91,20 +86,30 @@ public class TodaysExpenses extends Fragment {
                 exps.delete(del_id);
             }
         }
+        exps.close();
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        exps.close();
+    }
 
     @Override
     public void onResume() {
         super.onResume();
+        exps.open();
+        e_curs = exps.fetch();
+        headingCursor = exps.getAccounts();
         total = 0.0;
         Button expDet = new Button(getActivity());
         LinearLayout expenses = (LinearLayout) rootView.findViewById(R.id.explay);
 
 
         String dy = String.valueOf(cal.get(Calendar.YEAR));
-        String dm = String.valueOf(cal.get(Calendar.MONTH));
+        int idm = cal.get(Calendar.MONTH)+1;
+        String dm = String.valueOf(idm);
         String dd = String.valueOf(cal.get(Calendar.DATE));
         TextView display_date = new TextView(getActivity());
         LinearLayout.LayoutParams textParams;
@@ -112,6 +117,7 @@ public class TodaysExpenses extends Fragment {
         display_date.setLayoutParams(textParams);
         display_date.setText((Integer.parseInt(dm)+1)+"-"+dd+"-"+dy);
         display_date.setGravity(Gravity.CENTER);
+        display_date.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
         expenses.addView(display_date);
 
 
@@ -126,7 +132,7 @@ public class TodaysExpenses extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent addExpenseScreenIntent = new Intent(getActivity(), AddExpense.class);
-
+                exps.close();
                 final int result = 1;
                 addExpenseScreenIntent.putExtra("callingActivity", "MainActivity");
                 startActivityForResult(addExpenseScreenIntent, result);
@@ -135,10 +141,9 @@ public class TodaysExpenses extends Fragment {
 
 
         //a_curs = accts.fetch();
-        e_curs = exps.fetch();
-        headingCursor = exps.getAccounts();
-        String cur_account;
 
+        String cur_account;
+        StringBuilder dis_account;
         List<String> doneAccounts = new ArrayList<>();
         if(headingCursor!=null && headingCursor.moveToFirst()) {
             do {
@@ -155,11 +160,16 @@ public class TodaysExpenses extends Fragment {
                                     && month.equals(dm) && day.equals(dd)) {
                                 if(!head) {
                                     doneAccounts.add(cur_account);
+                                    dis_account = new StringBuilder();
+                                    dis_account.append(cur_account.toLowerCase());
+                                    dis_account.setCharAt(0,Character.toUpperCase(dis_account.charAt(0)));
+
                                     TextView acctN = new TextView(getActivity());
                                     textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                     acctN.setLayoutParams(textParams);
-                                    acctN.setText(cur_account);
+                                    acctN.setText(dis_account.toString());
                                     acctN.setGravity(Gravity.CENTER);
+                                    acctN.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
                                     expenses.addView(acctN);
                                     head = true;
                                 }
@@ -221,6 +231,7 @@ public class TodaysExpenses extends Fragment {
                                         editExpenseScreenIntent.putExtra("year", o_year);
                                         editExpenseScreenIntent.putExtra("month", o_month);
                                         editExpenseScreenIntent.putExtra("day", o_day);
+                                        exps.close();
                                         startActivityForResult(editExpenseScreenIntent, result);
 
                                     }

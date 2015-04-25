@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +30,7 @@ public class ExpenseViewer extends Activity {
     private Button expDet;
     private LinearLayout.LayoutParams buttonParams;
     private String cur_account;
+    private StringBuilder dis_account;
     private Boolean head;
     private List<String> doneAccounts;
     private String start_year, start_month, start_day, end_year, end_month, end_day;
@@ -57,6 +59,7 @@ public class ExpenseViewer extends Activity {
         headingCursor = exps.getAccounts();
         e_curs = exps.fetch();
         cur_account = "";
+        dis_account = new StringBuilder();
         head = false;
         doneAccounts = new ArrayList<>();
         String id = "";
@@ -99,14 +102,39 @@ public class ExpenseViewer extends Activity {
             }while(headingCursor.moveToNext());
         }
 
+        expDet = new Button(this);
+        expDet.setText("Done");
+        buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        expDet.setLayoutParams(buttonParams);
+        expenses.addView(expDet);
+        expDet.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent goingBack = new Intent();
+                exps.close();
+                goingBack.putExtra("value","1");
+
+                setResult(RESULT_OK,goingBack);
+
+                finish();
+
+
+            }
+        });
+
     }
 
     public void displayHeading(){
         doneAccounts.add(cur_account);
+        dis_account = new StringBuilder();
+        dis_account.append(cur_account.toLowerCase());
+        dis_account.setCharAt(0,Character.toUpperCase(dis_account.charAt(0)));
         TextView acctN = new TextView(this);
         textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         acctN.setLayoutParams(textParams);
-        acctN.setText(cur_account);
+        acctN.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
+        acctN.setText(dis_account.toString());
         acctN.setGravity(Gravity.CENTER);
         expenses.addView(acctN);
         head = true;

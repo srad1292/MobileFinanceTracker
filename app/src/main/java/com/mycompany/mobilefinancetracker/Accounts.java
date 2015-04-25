@@ -3,11 +3,15 @@ package com.mycompany.mobilefinancetracker;
 
 
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,13 +41,13 @@ public class Accounts extends Fragment {
 
         rootView = inflater.inflate(R.layout.accounts, null);
         accounts = new AccountsController(getActivity());
-        accounts.open();
+        //accounts.open();
         edit_name = "";
         edit_type = "";
         edit_amount = "";
         edit_limit = "";
-        curs = accounts.fetch();
-        types = accounts.getTypes();
+        //curs = accounts.fetch();
+        //types = accounts.getTypes();
         return rootView;
     }
 
@@ -51,6 +55,7 @@ public class Accounts extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        accounts.open();
         if (!data.getStringExtra("value").equals("3")) {
             if (data.getStringExtra("value").equals("1")) {
                 String a_name = String.format("%8s", data.getStringExtra("acct_name"));
@@ -73,19 +78,30 @@ public class Accounts extends Fragment {
                 accounts.delete(del_name);
             }
         }
+        accounts.close();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        accounts.close();
+    }
 
     @Override
     public void onResume() {
         super.onResume();
 
+        accounts.open();
+        curs = accounts.fetch();
+        types = accounts.getTypes();
         Button acctDet = new Button(getActivity());
         LinearLayout accts = (LinearLayout) rootView.findViewById(R.id.linlay);
         acctDet.setText("Add Account");
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
 
         acctDet.setLayoutParams(buttonParams);
+        //acctDet.setBackgroundColor(Color.CYAN);
+        acctDet.setBackgroundResource((R.drawable.my_button));
         accts.addView(acctDet);
 
         acctDet.setOnClickListener(new View.OnClickListener(){
@@ -101,9 +117,10 @@ public class Accounts extends Fragment {
         });
         //accounts.close();
         //accounts = new AccountsController(getActivity());
-        //accounts.open();
+
         types = accounts.getTypes();
         String cur_type;
+        StringBuilder dis_type;
         LinearLayout.LayoutParams textParams;
         List<String> doneTypes = new ArrayList<>();
         if(types!=null && types.moveToFirst()) {
@@ -111,11 +128,17 @@ public class Accounts extends Fragment {
                 cur_type = types.getString(types.getColumnIndex("type"));
                 if(!doneTypes.contains(cur_type)) {
                     doneTypes.add(cur_type);
+                    dis_type = new StringBuilder();
+                    dis_type.append(cur_type.toLowerCase());
+                    dis_type.setCharAt(0, Character.toUpperCase(dis_type.charAt(0)));
+
                     TextView acctType = new TextView(getActivity());
                     textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     acctType.setLayoutParams(textParams);
-                    acctType.setText(cur_type);
+                    acctType.setText(dis_type.toString());
                     acctType.setGravity(Gravity.CENTER);
+                    acctType.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
+
                     accts.addView(acctType);
                     curs = accounts.fetch();
                     if (curs != null && curs.moveToFirst()) {
@@ -127,13 +150,14 @@ public class Accounts extends Fragment {
                                 String l = curs.getString(curs.getColumnIndex("mylimit"));
                                 acctDet = new Button(getActivity());
 
-                                String bText = String.format(n + "     " + a);
+                                String bText = String.format(n + " " + a);
 
                                 acctDet.setText(bText);
-
+                                acctDet.setBackgroundResource((R.drawable.my_button));
                                 buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
+                                buttonParams.setMargins(0,10,0,10);
                                 acctDet.setLayoutParams(buttonParams);
+
                                 accts.addView(acctDet);
                                 final String o_name = n;
                                 final String o_type = t;
