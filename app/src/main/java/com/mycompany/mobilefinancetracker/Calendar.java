@@ -54,6 +54,7 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
         db = (Button) rootView.findViewById(R.id.done_button);
         selected = new ArrayList<String>();
         selected_type = "";
+        ac.close();
         return rootView;
     }
 
@@ -84,7 +85,7 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
         Spinner view_spin = (Spinner) rootView.findViewById(R.id.view_by_spinner);
         List<String> opts = new ArrayList<String>();
         opts.add("Account");
-        opts.add("Type");
+        opts.add("Category");
         selected_type = "";
         ArrayAdapter<String> view_adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, opts);
         view_spin.setAdapter(view_adapter);
@@ -129,6 +130,7 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
                 }
 
                 viewerScreenIntent.putExtra("type",selected_type);
+                ac.close();
                 startActivityForResult(viewerScreenIntent, result);
             }
         });

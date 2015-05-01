@@ -62,6 +62,16 @@ public class ExpensesController {
         return cursor;
     }
 
+    public Cursor getTypes() {
+        String[] columns = new String[] {ExpensesHelper.type};
+        Cursor cursor = database.query(ExpensesHelper.TABLE_NAME, columns, null,
+                null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
+        return cursor;
+    }
+
     public int update(String id, String name, String amount, String type, String location,String year, String month, String day) {
 
         ContentValues contentValues = new ContentValues();

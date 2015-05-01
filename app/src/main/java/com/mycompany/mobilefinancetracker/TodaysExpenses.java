@@ -122,6 +122,7 @@ public class TodaysExpenses extends Fragment {
 
 
         expDet.setText("Add Expense");
+        expDet.setBackgroundResource((R.drawable.my_button));
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         expDet.setLayoutParams(buttonParams);
@@ -202,10 +203,10 @@ public class TodaysExpenses extends Fragment {
                                 expDet = new Button(getActivity());
 
                                 String buttonText = String.format(location + " " + amount);
-
+                                expDet.setBackgroundResource((R.drawable.my_button));
                                 expDet.setText(buttonText);
                                 buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
+                                buttonParams.setMargins(0,10,0,10);
                                 expDet.setLayoutParams(buttonParams);
                                 expenses.addView(expDet);
                                 final String o_id = id;

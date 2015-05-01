@@ -86,7 +86,7 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         goingBack.putExtra("month",String.valueOf(monthIN.getText()));
         goingBack.putExtra("day",String.valueOf(dayIN.getText()));
         goingBack.putExtra("value","2");
-        c.close();
+        ac.close();
         setResult(RESULT_OK,goingBack);
 
         finish();
@@ -97,7 +97,7 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
     public void onCancelClicked(View view){
         Intent goingBack = new Intent();
         goingBack.putExtra("value","3");
-        c.close();
+        ac.close();
         setResult(RESULT_OK,goingBack);
 
         finish();
@@ -107,7 +107,7 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         Intent goingBack = new Intent();
         goingBack.putExtra("id",id);
         goingBack.putExtra("value","4");
-        c.close();
+        ac.close();
         setResult(RESULT_OK,goingBack);
 
         finish();

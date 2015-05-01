@@ -13,7 +13,7 @@
     <string name="edit_expense">Edit Expense</string>
     <string name="account_input">Account:</string>
     <string name="name_input">Name:</string>
-    <string name="type_input">Type:</string>
+    <string name="type_input">Category:</string>
     <string name="amount_input">Amount:</string>
     <string name="limit_input">Monthly Limit:</string>
     <string name="location_input">Location:</string>

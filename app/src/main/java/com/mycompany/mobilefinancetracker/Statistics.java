@@ -52,6 +52,7 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
         ed = (EditText) rootView.findViewById(R.id.end_day);
         db = (Button) rootView.findViewById(R.id.done_button);
         selected = new ArrayList<String>();
+        ac.close();
         return rootView;
     }
 
@@ -111,6 +112,7 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
                     String name = "account" + x;
                     habitsScreenIntent.putExtra(name,selected.get(x));
                 }
+                ac.close();
                 startActivityForResult(habitsScreenIntent, result);
             }
         });
@@ -130,6 +132,12 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ac.close();
     }
 }
 

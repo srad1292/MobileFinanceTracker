@@ -35,6 +35,7 @@ public class Accounts extends Fragment {
     private String edit_amount;
     private String edit_limit;
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
