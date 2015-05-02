@@ -37,7 +37,8 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
     Cursor c;
     List<String> selected;
     String selected_type;
-
+    private int check;
+    private List<String> items;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,9 +67,11 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
         ac = new AccountsController(getActivity());
         ac.open();
         c = ac.fetch();
+        check = 0;
         Spinner dropdown = (Spinner) rootView.findViewById(R.id.account_spinner);
-        List<String> items = new ArrayList<String>();
+        items = new ArrayList<String>();
         if (c!=null && c.moveToFirst()){
+            items.add("All Accounts");
             do{
                 if(!items.contains(c.getString(c.getColumnIndex("_id")))){
                     items.add(c.getString(c.getColumnIndex("_id")));
@@ -108,6 +111,13 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
             @Override
             public void onClick(View v) {
                 Intent viewerScreenIntent = new Intent(getActivity(), ExpenseViewer.class);
+                if(check <= 1){
+                    for (int iter = 0; iter < items.size(); iter++){
+                        if(!selected.contains(items.get(iter))) {
+                            selected.add(items.get(iter));
+                        }
+                    }
+                }
                 String start_year = sy.getText().toString();
                 String start_month = sm.getText().toString();
                 String start_day = sd.getText().toString();
@@ -152,7 +162,22 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch(parent.getId()){
             case R.id.account_spinner:
-                selected.add(parent.getItemAtPosition(position).toString());
+                check++;
+                if(check > 1) {
+                    if (parent.getItemAtPosition(position).toString().equals("All Accounts")) {
+                        for (int t_iter = 0; t_iter < items.size(); t_iter++) {
+                            if (!selected.contains(parent.getItemAtPosition(t_iter).toString())) {
+                                selected.add(parent.getItemAtPosition(t_iter).toString());
+                            }
+                        }
+                    }
+                    else {
+                        if (!selected.contains(parent.getItemAtPosition(position).toString())) {
+                            selected.add(parent.getItemAtPosition(position).toString());
+                        }
+                    }
+                }
+
                 break;
             case R.id.view_by_spinner:
                 selected_type = parent.getItemAtPosition(position).toString();

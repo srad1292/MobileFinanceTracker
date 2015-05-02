@@ -32,12 +32,12 @@ public class ExpenseViewer extends Activity {
     private String cur_account, cur_type;
     private StringBuilder dis_account, dis_type;
     private Boolean head;
-    private List<String> doneAccounts, done_types;
+    private List<String> doneAccounts, done_types,accts;
     private String start_year, start_month, start_day, end_year, end_month, end_day;
     private String year, month, day, id, account, amount, type, location;
     private String selected_type;
     private boolean created = false;
-
+    private int size;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +53,7 @@ public class ExpenseViewer extends Activity {
         end_month = activityThatCalled.getExtras().getString("end_month");
         end_day = activityThatCalled.getExtras().getString("end_day");
         selected_type = activityThatCalled.getExtras().getString("type");
+        size = activityThatCalled.getExtras().getInt("size");
         total = 0.0;
         textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         expenses = (LinearLayout) findViewById(R.id.linlay);
@@ -67,6 +68,10 @@ public class ExpenseViewer extends Activity {
         amount = "";
         type = "";
         location = "";
+        accts = new ArrayList<String>();
+        for (int y = 0; y < size; y++){
+            accts.add(activityThatCalled.getExtras().getString(("account"+y)));
+        }
 
     }
 
@@ -180,7 +185,8 @@ public class ExpenseViewer extends Activity {
 
     public Boolean shouldDisplay(){
         Boolean should = false;
-        if(e_curs.getString(e_curs.getColumnIndex("account")).equals(cur_account) || e_curs.getString(e_curs.getColumnIndex("type")).equals(cur_type)){
+        if((accts.contains(e_curs.getString(e_curs.getColumnIndex("account"))))
+                && (e_curs.getString(e_curs.getColumnIndex("account")).equals(cur_account) || e_curs.getString(e_curs.getColumnIndex("type")).equals(cur_type))){
             if(year.equals(start_year)){
                 if(month.equals(start_month)){
                     if(Integer.parseInt(day) >= Integer.parseInt(start_day)){

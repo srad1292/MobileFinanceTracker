@@ -68,8 +68,9 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
         c = ac.fetch();
         Spinner dropdown = (Spinner) rootView.findViewById(R.id.account_spinner);
         items = new ArrayList<String>();
-        items.add("All Accounts");
+
         if (c!=null && c.moveToFirst()){
+            items.add("All Accounts");
             do{
                 if(!items.contains(c.getString(c.getColumnIndex("_id")))){
                     items.add(c.getString(c.getColumnIndex("_id")));
