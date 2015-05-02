@@ -3,6 +3,7 @@ package com.mycompany.mobilefinancetracker;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -29,7 +30,7 @@ public class Habits extends Activity {
     private Cursor headingCursor;
     private Cursor e_curs;
     private Double total;
-    private LinearLayout.LayoutParams textParams;
+    private LinearLayout.LayoutParams textParams, rightTextParams;
     private LinearLayout display_area,row;
     private TextView category;
     private TextView total_and_percent;
@@ -60,18 +61,11 @@ public class Habits extends Activity {
         accts = new ArrayList<String>();
         perCat = new HashMap<String, Double>();
         int x;
-        if(size==1){
-            x = 0;
-        }
-        else{
-            x=1;
-        }
-        for (int y = x; y < size; y++){
+
+        for (int y = 0; y < size; y++){
             accts.add(activityThatCalled.getExtras().getString(("account"+y)));
         }
-        for (int y = 0; y < size; y++){
-            Log.i("Account: ", accts.get(y));
-        }
+
 
     }
 
@@ -85,6 +79,8 @@ public class Habits extends Activity {
         cur_type = "";
         dis_type = new StringBuilder();
         done_types = new ArrayList<>();
+        head = false;
+        total = 0.0;
         displayHandler();
         exps.close();
 
@@ -100,7 +96,7 @@ public class Habits extends Activity {
                 if (!done_types.contains(cur_type)) {
 
                     if (e_curs != null && e_curs.moveToFirst()) {
-
+                        head = false;
                         //Go through all expenses checking against current account name
                         do {
                             year = e_curs.getString(e_curs.getColumnIndex("year"));
@@ -221,21 +217,51 @@ public class Habits extends Activity {
     public void display(){
         display_area = (LinearLayout) findViewById(R.id.display_area);
         viewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        viewParams.setMargins(0,0,0,10);
         textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        rightTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        String precision = "";
+        String good_precision = "";
+        int pre_len = 0;
+        int ind = 0;
         double percent = 0.0;
+        int index = 0;
         for (HashMap.Entry<String, Double> entry : perCat.entrySet()) {
             String key = entry.getKey();
             Double value = entry.getValue();
             row = new LinearLayout(this);
             row.setLayoutParams(viewParams);
+
             category = new TextView(this);
             total_and_percent = new TextView(this);
             category.setLayoutParams(textParams);
-            total_and_percent.setLayoutParams(textParams);
+            total_and_percent.setLayoutParams(rightTextParams);
             category.setText(key + ": ");
+            category.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
+            if(index % 2 == 1){
+                row.setBackgroundColor(Color.parseColor("#9AD2D2"));
+            }
             percent = (value * 100) / total;
-            total_and_percent.setText("$" + value.toString() + " | " + String.valueOf(percent) + "%");
+            precision = String.valueOf(percent);
+            if(precision.contains(".")){
+                pre_len = precision.length();
+                ind = precision.indexOf('.');
+                if(pre_len > (ind+3)){
+                  good_precision = precision.substring(0,ind+3);
+                }
+                else{
+                    good_precision = String.valueOf(percent);
+                }
+
+            }
+            total_and_percent.setText("$" + value.toString() + " | " + good_precision + "%");
+            total_and_percent.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
+            total_and_percent.setGravity(Gravity.RIGHT);
+            row.addView(category);
+            row.addView(total_and_percent);
             display_area.addView(row);
+            index++;
         }
 
     }

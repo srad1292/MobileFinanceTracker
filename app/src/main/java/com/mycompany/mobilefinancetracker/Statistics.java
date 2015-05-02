@@ -36,6 +36,8 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
     AccountsController ac;
     Cursor c;
     List<String> selected;
+    List<String> items;
+    private int check;
 
     @Nullable
     @Override
@@ -60,12 +62,13 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
     @Override
     public void onResume() {
         super.onResume();
-
+        check = 0;
         ac = new AccountsController(getActivity());
         ac.open();
         c = ac.fetch();
         Spinner dropdown = (Spinner) rootView.findViewById(R.id.account_spinner);
-        List<String> items = new ArrayList<String>();
+        items = new ArrayList<String>();
+        items.add("All Accounts");
         if (c!=null && c.moveToFirst()){
             do{
                 if(!items.contains(c.getString(c.getColumnIndex("_id")))){
@@ -93,6 +96,13 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
             @Override
             public void onClick(View v) {
                 Intent habitsScreenIntent = new Intent(getActivity(), Habits.class);
+                if(check <= 1){
+                    for (int iter = 0; iter < items.size(); iter++){
+                        if(!selected.contains(items.get(iter))) {
+                            selected.add(items.get(iter));
+                        }
+                    }
+                }
                 String start_year = sy.getText().toString();
                 String start_month = sm.getText().toString();
                 String start_day = sd.getText().toString();
@@ -126,7 +136,23 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        selected.add(parent.getItemAtPosition(position).toString());
+        check++;
+        if(check > 1) {
+            if (parent.getItemAtPosition(position).toString().equals("All Accounts")) {
+                for (int t_iter = 0; t_iter < items.size(); t_iter++) {
+                    if (!selected.contains(parent.getItemAtPosition(t_iter).toString())) {
+                        selected.add(parent.getItemAtPosition(t_iter).toString());
+                    }
+                }
+            }
+            else {
+                if (!selected.contains(parent.getItemAtPosition(position).toString())) {
+                    selected.add(parent.getItemAtPosition(position).toString());
+                }
+            }
+        }
+
+
     }
 
     @Override
