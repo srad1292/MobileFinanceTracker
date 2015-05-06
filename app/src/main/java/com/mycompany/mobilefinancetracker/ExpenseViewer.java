@@ -21,9 +21,10 @@ import java.util.List;
  */
 public class ExpenseViewer extends Activity {
     private ExpensesController exps;
-
+    private AccountsController acont;
     private Cursor headingCursor;
     private Cursor e_curs;
+    private Cursor a_curs;
     private Double total;
     private LinearLayout.LayoutParams textParams;
     private LinearLayout expenses;
@@ -54,15 +55,9 @@ public class ExpenseViewer extends Activity {
         end_day = activityThatCalled.getExtras().getString("end_day");
         selected_type = activityThatCalled.getExtras().getString("type");
         size = activityThatCalled.getExtras().getInt("size");
-        total = 0.0;
-        textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        expenses = (LinearLayout) findViewById(R.id.linlay);
-        expDet = new Button(this);
-        buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         exps = new ExpensesController(this);
-        exps.open();
+        acont = new AccountsController(this);
         head = false;
-        e_curs = exps.fetch();
         id = "";
         account = "";
         amount = "";
@@ -77,7 +72,7 @@ public class ExpenseViewer extends Activity {
 
 
     public void displayExpensesByAccount(){
-
+        e_curs = exps.fetch();
         if(headingCursor!=null && headingCursor.moveToFirst()) {
             //Go through the accounts column
             do {
@@ -106,13 +101,18 @@ public class ExpenseViewer extends Activity {
                 }
             }while(headingCursor.moveToNext());
         }
+        //display total
+        TextView display_total = new TextView(this);
+        textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        textParams.setMargins(0,15,0,15);
+        display_total.setLayoutParams(textParams);
+        display_total.setText("Total: $" + String.valueOf(total));
+        display_total.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        display_total.setGravity(Gravity.CENTER);
+        expenses.addView(display_total);
 
-        expDet = new Button(this);
-        expDet.setText("Done");
-        buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        expDet.setLayoutParams(buttonParams);
-        expDet.setBackgroundResource(R.drawable.my_button);
-        expenses.addView(expDet);
+        //display dnne button
+        expDet = (Button) findViewById(R.id.done_button);
         expDet.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -132,6 +132,7 @@ public class ExpenseViewer extends Activity {
     }
 
     public void displayExpensesByType(){
+        e_curs = exps.fetch();
         if(headingCursor!=null && headingCursor.moveToFirst()) {
             //Go through the accounts column
             do {
@@ -164,6 +165,7 @@ public class ExpenseViewer extends Activity {
         expDet = new Button(this);
         expDet.setText("Done");
         buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        buttonParams.setMargins(0,10,0,0);
         expDet.setLayoutParams(buttonParams);
         expDet.setBackgroundResource(R.drawable.my_button);
         expenses.addView(expDet);
@@ -258,7 +260,7 @@ public class ExpenseViewer extends Activity {
     public void displayButton(){
         expDet = new Button(this);
 
-        String buttonText = String.format(location + " " + amount);
+        String buttonText = String.format(location + ":\t$" + amount);
 
         expDet.setText(buttonText);
         buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -340,22 +342,131 @@ public class ExpenseViewer extends Activity {
                 String e_year = data.getStringExtra("year");
                 String e_month = data.getStringExtra("month");
                 String e_day = data.getStringExtra("day");
-
+                String old = data.getStringExtra("old");
+                String old_a = data.getStringExtra("old_amount");
                 exps.update(id, a_name, e_amount, e_type, e_location, e_year, e_month, e_day);
+
+                if(old.equals(a_name) && !old_a.equals(e_amount)){
+                    changeAmount(old,e_amount,old_a);
+                }
+                else if(!old.equals(a_name) && old_a.equals(e_amount)){
+                    changeAccount(a_name,old,old_a,e_amount);
+                }
+                else if(!old.equals(a_name) && !old_a.equals(e_amount)){
+                    changeBoth(a_name,old,old_a,e_amount);
+                }
 
             } else if (data.getStringExtra("value").equals("4")){
                 String del_id = data.getStringExtra("id");
                 exps.delete(del_id);
+                String old = data.getStringExtra("old");
+                String old_a = data.getStringExtra("old_amount");
+                changeAmount(old,"0.0",old_a);
             }
         }
+        exps.close();
 
 
     }
 
 
+    public void changeAmount(String account, String new_amount, String old_amount){
+        acont.open();
+        a_curs = acont.fetch();
+        String a_amount = "";
+        Boolean found = false;
+        if (a_curs != null && a_curs.moveToFirst()) {
+            do{
+                if (a_curs.getString(a_curs.getColumnIndex("_id")).equals(account)){
+                    a_amount = a_curs.getString(a_curs.getColumnIndex("amount"));
+                    found = true;
+                }
+            }while (a_curs.moveToNext() && !found);
+        }
+        Double cur_amount = sToTotal(a_amount);
+        Double v1 = sToTotal(new_amount);
+        Double v2 = sToTotal(old_amount);
+        Double subtract = 0.0;
+        Double result = 0.0;
+        if (v1 > v2){
+            subtract = v1 - v2;
+            result = cur_amount - subtract;
+        }
+        if (v1 < v2){
+            subtract = v2 - v1;
+            result = cur_amount + subtract;
+        }
+        String updated = String.valueOf(result);
+        acont.updateAmount(account,a_amount,updated);
+        acont.close();
+    }
+
+    public void changeAccount(String account, String old_account,String cur_amount, String new_amount){
+        changeAmount(old_account,"0.0",cur_amount);
+        changeAmount(account,new_amount,"0.0");
+    }
+
+    public void changeBoth(String account, String old_account,String cur_amount, String new_amount){
+        changeAmount(old_account,"0.0",cur_amount);
+        changeAmount(account,new_amount,"0.0");
+    }
+
+    public Double sToTotal(String amount){
+        Double total = 0.0;
+        if(amount.contains(".")){
+            int position = amount.indexOf(".");
+
+            String de_st;
+            if(amount.startsWith(".")) {
+                de_st = amount.substring(1);
+            }
+
+            else{
+                String v1 = amount.substring(0, position);
+                de_st = amount.substring(position+1);
+                total = total + Integer.parseInt(v1);
+            }
+
+            double dec = (double) Integer.parseInt(de_st);
+            BigDecimal bd = new BigDecimal(dec/100.0).setScale(2, RoundingMode.HALF_UP);
+            total = total + (bd.doubleValue());
+        }
+        else{
+            total = total + Integer.parseInt(amount);
+        }
+        return total;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        exps.open();
+        total = 0.0;
+        textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        expenses = (LinearLayout) findViewById(R.id.linlay);
+        expDet = new Button(this);
+        buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+
+        String date_heading = " ";
+        TextView display_date = new TextView(this);
+        if(start_month.equals(end_month) && start_day.equals(end_day) && start_year.equals(end_year)){
+            date_heading = (start_month + "-" + start_day + "-" + start_year);
+            display_date.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+        }
+        else{
+            date_heading = (start_month + "-" + start_day + "-" + start_year + " - " + end_month + "-" + end_day + "-" + end_year);
+            display_date.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+        }
+
+
+        textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        textParams.setMargins(0,15,0,15);
+        display_date.setLayoutParams(textParams);
+        display_date.setText(date_heading);
+
+        display_date.setGravity(Gravity.CENTER);
+        expenses.addView(display_date);
         if(selected_type.equals("Account")) {
             headingCursor = exps.getAccounts();
             cur_account = "";
@@ -370,6 +481,8 @@ public class ExpenseViewer extends Activity {
             done_types = new ArrayList<>();
             displayExpensesByType();
         }
+        exps.close();
     }
+
 
 }

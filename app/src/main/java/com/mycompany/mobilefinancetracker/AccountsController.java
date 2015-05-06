@@ -73,6 +73,15 @@ public class AccountsController {
 
     }
 
+    public int updateAmount(String name, String old_amount, String new_amount){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(AccountsHelper._id, name);
+        contentValues.put(AccountsHelper.amount,new_amount);
+        int i = database.update(AccountsHelper.TABLE_NAME, contentValues,
+                AccountsHelper._id + " = '" + name + "'", null);
+        return i;
+    }
+
 
     public void delete(String name) {
         database.delete(AccountsHelper.TABLE_NAME, AccountsHelper._id + " = '" + name + "'", null);

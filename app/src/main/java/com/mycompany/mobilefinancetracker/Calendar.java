@@ -39,6 +39,7 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
     String selected_type;
     private int check;
     private List<String> items;
+    private java.util.Calendar cal;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +54,11 @@ public class Calendar extends Fragment implements AdapterView.OnItemSelectedList
         em = (EditText) rootView.findViewById(R.id.end_month);
         ed = (EditText) rootView.findViewById(R.id.end_day);
         db = (Button) rootView.findViewById(R.id.done_button);
+        cal = java.util.Calendar.getInstance();
+        int cal_mon = cal.get(java.util.Calendar.MONTH) + 1;
+        ey.setText(String.valueOf(cal.get(java.util.Calendar.YEAR)));
+        em.setText(String.valueOf(cal_mon));
+        ed.setText(String.valueOf(cal.get(java.util.Calendar.DATE)));
         selected = new ArrayList<String>();
         selected_type = "";
         ac.close();

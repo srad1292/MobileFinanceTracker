@@ -28,6 +28,7 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
     private EditText locationIN;
     private EditText typeIN;
     private EditText yearIN, monthIN, dayIN;
+    private String old_account, old_amount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +38,8 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         id = activityThatCalled.getExtras().getString("id");
 
         expenseAccount = activityThatCalled.getExtras().getString("account");
+        old_account = expenseAccount;
+        old_amount = activityThatCalled.getExtras().getString("amount");
         ac = new AccountsController(this);
         ac.open();
         c = ac.fetch();
@@ -85,6 +88,8 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         goingBack.putExtra("year",String.valueOf(yearIN.getText()));
         goingBack.putExtra("month",String.valueOf(monthIN.getText()));
         goingBack.putExtra("day",String.valueOf(dayIN.getText()));
+        goingBack.putExtra("old",old_account);
+        goingBack.putExtra("old_amount",old_amount);
         goingBack.putExtra("value","2");
         ac.close();
         setResult(RESULT_OK,goingBack);
@@ -107,6 +112,8 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         Intent goingBack = new Intent();
         goingBack.putExtra("id",id);
         goingBack.putExtra("value","4");
+        goingBack.putExtra("old",old_account);
+        goingBack.putExtra("old_amount",old_amount);
         ac.close();
         setResult(RESULT_OK,goingBack);
 

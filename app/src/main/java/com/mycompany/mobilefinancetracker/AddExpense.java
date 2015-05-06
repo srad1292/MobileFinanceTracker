@@ -63,6 +63,7 @@ public class AddExpense extends Activity implements AdapterView.OnItemSelectedLi
         yearIN.setText(String.valueOf(cal.get(java.util.Calendar.YEAR)));
         monthIN.setText(String.valueOf(cal_mon));
         dayIN.setText(String.valueOf(cal.get(java.util.Calendar.DATE)));
+        ac.close();
 
     }
 

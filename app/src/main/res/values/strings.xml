@@ -25,7 +25,7 @@
     <string name="name_hint">5555, Spending, Savings</string>
     <string name="a_type_hint">Credit, Debit, Cash</string>
     <string name="amount_hint">10000</string>
-    <string name="limit_hint">100</string>
+    <string name="limit_hint">100, Blank For No Limit</string>
     <string name="e_type_hint">Food, Education, Gas</string>
     <string name="e_amount_hint">25, 45.52</string>
     <string name="location_hint">Target</string>

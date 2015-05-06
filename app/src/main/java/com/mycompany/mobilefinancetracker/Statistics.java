@@ -17,7 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-
+import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
     List<String> selected;
     List<String> items;
     private int check;
-
+    private Calendar cal;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +53,11 @@ public class Statistics extends Fragment implements AdapterView.OnItemSelectedLi
         em = (EditText) rootView.findViewById(R.id.end_month);
         ed = (EditText) rootView.findViewById(R.id.end_day);
         db = (Button) rootView.findViewById(R.id.done_button);
+        cal = Calendar.getInstance();
+        int cal_mon = cal.get(java.util.Calendar.MONTH) + 1;
+        ey.setText(String.valueOf(cal.get(java.util.Calendar.YEAR)));
+        em.setText(String.valueOf(cal_mon));
+        ed.setText(String.valueOf(cal.get(java.util.Calendar.DATE)));
         selected = new ArrayList<String>();
         ac.close();
         return rootView;

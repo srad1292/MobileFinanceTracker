@@ -98,8 +98,9 @@ public class Accounts extends Fragment {
         Button acctDet = new Button(getActivity());
         LinearLayout accts = (LinearLayout) rootView.findViewById(R.id.linlay);
         acctDet.setText("Add Account");
+        acctDet.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-
+        buttonParams.setMargins(0,0,0,20);
         acctDet.setLayoutParams(buttonParams);
         //acctDet.setBackgroundColor(Color.CYAN);
         acctDet.setBackgroundResource((R.drawable.my_button));
@@ -151,7 +152,7 @@ public class Accounts extends Fragment {
                                 String l = curs.getString(curs.getColumnIndex("mylimit"));
                                 acctDet = new Button(getActivity());
 
-                                String bText = String.format(n + " " + a);
+                                String bText = String.format(n + ":\t$" + a);
 
                                 acctDet.setText(bText);
                                 acctDet.setBackgroundResource((R.drawable.my_button));
