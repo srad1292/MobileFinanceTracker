@@ -102,11 +102,27 @@ public class ExpenseViewer extends Activity {
             }while(headingCursor.moveToNext());
         }
         //display total
+        int pre_len = 0;
+        int ind = 0;
+        String good_precision = " ";
+        String precision = String.valueOf(total);
+        if(precision.contains(".")){
+            pre_len = precision.length();
+            ind = precision.indexOf('.');
+            if(pre_len > (ind+3)){
+                good_precision = precision.substring(0,ind+3);
+            }
+            else{
+                good_precision = String.valueOf(total);
+            }
+
+        }
+
         TextView display_total = new TextView(this);
         textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         textParams.setMargins(0,15,0,15);
         display_total.setLayoutParams(textParams);
-        display_total.setText("Total: $" + String.valueOf(total));
+        display_total.setText("Total: $" + good_precision);
         display_total.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         display_total.setGravity(Gravity.CENTER);
         expenses.addView(display_total);
@@ -162,13 +178,35 @@ public class ExpenseViewer extends Activity {
             }while(headingCursor.moveToNext());
         }
 
-        expDet = new Button(this);
-        expDet.setText("Done");
-        buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        buttonParams.setMargins(0,10,0,0);
-        expDet.setLayoutParams(buttonParams);
-        expDet.setBackgroundResource(R.drawable.my_button);
-        expenses.addView(expDet);
+        //display total
+        int pre_len = 0;
+        int ind = 0;
+        String good_precision = " ";
+        String precision = String.valueOf(total);
+        if(precision.contains(".")){
+            pre_len = precision.length();
+            ind = precision.indexOf('.');
+            if(pre_len > (ind+3)){
+                good_precision = precision.substring(0,ind+3);
+            }
+            else{
+                good_precision = String.valueOf(total);
+            }
+
+        }
+
+
+        TextView display_total = new TextView(this);
+        textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        textParams.setMargins(0,15,0,15);
+        display_total.setLayoutParams(textParams);
+        display_total.setText("Total: $" + good_precision);
+        display_total.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        display_total.setGravity(Gravity.CENTER);
+        expenses.addView(display_total);
+
+        //display dnne button
+        expDet = (Button) findViewById(R.id.done_button);
         expDet.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -180,9 +218,10 @@ public class ExpenseViewer extends Activity {
                 setResult(RESULT_OK,goingBack);
 
                 finish();
+
+
             }
-        });
-    }
+        });    }
 
 
     public Boolean shouldDisplay(){

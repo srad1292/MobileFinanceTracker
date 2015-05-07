@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,9 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
     private EditText typeIN;
     private EditText yearIN, monthIN, dayIN;
     private String old_account, old_amount;
+    private String expenseAmount;
+    private String expenseLocation;
+    private String expenseType, o_year, o_month, o_day;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,33 +73,81 @@ public class EditExpense extends Activity implements AdapterView.OnItemSelectedL
         yearIN.setText(activityThatCalled.getExtras().getString("year"));
         monthIN.setText(activityThatCalled.getExtras().getString("month"));
         dayIN.setText(activityThatCalled.getExtras().getString("day"));
+
+        expenseAmount = "";
+        expenseLocation = "";
+        expenseType ="";
+        o_year="";
+        o_month="";
+        o_day="";
     }
 
 
     public void onSaveClicked(View view){
+        TextView aE = (TextView) findViewById(R.id.amount_error);
+        TextView cE = (TextView) findViewById(R.id.category_error);
+        TextView lE = (TextView) findViewById(R.id.location_error);
+        TextView dE = (TextView) findViewById(R.id.date_error);
+        boolean good = true;
+        if (amountIN.getText().toString().trim().length() != 0) {
+            expenseAmount = String.valueOf(amountIN.getText());
+            aE.setVisibility(View.GONE);
+        } else {
+            good = false;
+            aE.setVisibility(View.VISIBLE);
+        }
 
-        String expenseAmount = String.valueOf(amountIN.getText());
-        String expenseLocation = String.valueOf(locationIN.getText());
-        String expenseType = String.valueOf(typeIN.getText());
+        if (typeIN.getText().toString().trim().length() != 0) {
+            expenseType = String.valueOf(typeIN.getText());
+            cE.setVisibility(View.GONE);
+        } else {
+            good = false;
+            cE.setVisibility(View.VISIBLE);
+        }
 
-        Intent goingBack = new Intent();
+        if (locationIN.getText().toString().trim().length() != 0) {
+            expenseLocation = String.valueOf(locationIN.getText());
+            lE.setVisibility(View.GONE);
+        } else {
+            good = false;
+            lE.setVisibility(View.VISIBLE);
+        }
 
-        goingBack.putExtra("id",id);
-        goingBack.putExtra("exp_account",expenseAccount);
-        goingBack.putExtra("exp_amount",expenseAmount);
-        goingBack.putExtra("exp_location",expenseLocation);
-        goingBack.putExtra("exp_type",expenseType);
-        goingBack.putExtra("year",String.valueOf(yearIN.getText()));
-        goingBack.putExtra("month",String.valueOf(monthIN.getText()));
-        goingBack.putExtra("day",String.valueOf(dayIN.getText()));
-        goingBack.putExtra("old",old_account);
-        goingBack.putExtra("old_amount",old_amount);
-        goingBack.putExtra("value","2");
-        ac.close();
-        setResult(RESULT_OK,goingBack);
 
-        finish();
+        if (yearIN.getText().toString().trim().length() != 0 && monthIN.getText().toString().trim().length() != 0 && dayIN.getText().toString().trim().length() != 0){
+            o_year = String.valueOf(yearIN.getText());
+            o_month = String.valueOf(monthIN.getText());
+            o_day = String.valueOf(dayIN.getText());
+            dE.setVisibility(View.GONE);
+        }
 
+        else{
+            good = false;
+            dE.setVisibility(View.VISIBLE);
+        }
+
+
+        String a = String.valueOf(expenseAccount);
+
+        if(good) {
+            Intent goingBack = new Intent();
+
+            goingBack.putExtra("id", id);
+            goingBack.putExtra("exp_account", expenseAccount);
+            goingBack.putExtra("exp_amount", expenseAmount);
+            goingBack.putExtra("exp_location", expenseLocation);
+            goingBack.putExtra("exp_type", expenseType);
+            goingBack.putExtra("year", o_year);
+            goingBack.putExtra("month", o_month);
+            goingBack.putExtra("day", o_day);
+            goingBack.putExtra("old", old_account);
+            goingBack.putExtra("old_amount", old_amount);
+            goingBack.putExtra("value", "2");
+            ac.close();
+            setResult(RESULT_OK, goingBack);
+
+            finish();
+        }
 
     }
 

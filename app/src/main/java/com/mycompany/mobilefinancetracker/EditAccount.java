@@ -37,6 +37,9 @@ public class EditAccount extends Activity {
     private String cur_account;
     private String yes_amount;
     private String limit;
+    private String accountType;
+    private String accountAmount;
+    private String accountName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +48,7 @@ public class EditAccount extends Activity {
         Intent activityThatCalled = getIntent();
         String previousActivity = activityThatCalled.getExtras().getString("callingActivity");
         b_name = activityThatCalled.getExtras().getString("name");
-        limit = " ";
+
         total = 0.0;
         cal = Calendar.getInstance();
         cur_year = String.valueOf(cal.get(java.util.Calendar.YEAR));
@@ -63,17 +66,21 @@ public class EditAccount extends Activity {
         typeIN = (EditText) findViewById(R.id.edit_account_type);
         amountIN = (EditText) findViewById(R.id.edit_account_amount);
         limitIN = (EditText) findViewById(R.id.edit_account_limit);
-        if(activityThatCalled.getExtras().getString("limit")!=null){
-            limit = activityThatCalled.getExtras().getString("limit");
-        }
+        limit = activityThatCalled.getExtras().getString("limit").trim();
+        displayCurrent();
         nameIN.setText(b_name);
         typeIN.setText(activityThatCalled.getExtras().getString("type"));
         amountIN.setText(activityThatCalled.getExtras().getString("amount"));
-        limitIN.setText(activityThatCalled.getExtras().getString("limit"));
-        displayCurrent();
-        ec.close();
-    }
+        if(limit.equals("-1")){
+            limit = " ";
+        }
+        limitIN.setText(limit);
 
+        ec.close();
+        accountType = "";
+        accountAmount = "";
+        accountName="";
+    }
 
     public void displayCurrent(){
         if (curs != null && curs.moveToFirst()) {
@@ -133,7 +140,7 @@ public class EditAccount extends Activity {
         String pre_total = getTotalPrecision(total);
 
 
-        if(!limit.equals(" ")){
+        if(!limit.equals("-1")){
             String pre_percent = getPercentPrecision(total);
             cur.setText("$" + pre_total + " | " + pre_percent + "%");
         }
@@ -141,7 +148,7 @@ public class EditAccount extends Activity {
         else{
             cur.setText("$" + pre_total);
         }
-     }
+    }
 
     public String getTotalPrecision(Double val){
 
@@ -212,27 +219,55 @@ public class EditAccount extends Activity {
         return value;
     }
 
+
     public void onSaveClicked(View view){
+        boolean good = true;
+        TextView nE = (TextView) findViewById(R.id.name_error);
+        TextView tE = (TextView) findViewById(R.id.type_error);
+        TextView aE = (TextView) findViewById(R.id.amount_error);
+        String accountLimit = "-1";
+        if(nameIN.getText().toString().trim().length() != 0) {
+            accountName = String.valueOf(nameIN.getText());
+            nE.setVisibility(view.GONE);
+        }
+        else{
+            good = false;
+            nE.setVisibility(view.VISIBLE);
+        }
+        if(limitIN.getText().toString().trim().length() != 0) {
+            accountLimit = String.valueOf(limitIN.getText());
+        }
+        if(typeIN.getText().toString().trim().length() != 0) {
+            accountType = String.valueOf(typeIN.getText());
+            tE.setVisibility(view.GONE);
+        }
+        else{
+            tE.setVisibility(view.VISIBLE);
+            good = false;
+        }
+        if(amountIN.getText().toString().trim().length() != 0) {
+            accountAmount = String.valueOf(amountIN.getText());
+            aE.setVisibility(view.GONE);
+        }
+        else{
+            aE.setVisibility(view.VISIBLE);
+            good = false;
+        }
+        if(good) {
+            Intent goingBack = new Intent();
 
-        String accountName = String.valueOf(nameIN.getText());
-        String accountType = String.valueOf(typeIN.getText());
-        String accountAmount = String.valueOf(amountIN.getText());
-        String accountLimit = String.valueOf(limitIN.getText());
+            goingBack.putExtra("acct_name", accountName);
+            goingBack.putExtra("acct_type", accountType);
+            goingBack.putExtra("acct_amount", accountAmount);
+            goingBack.putExtra("acct_limit", accountLimit);
+            goingBack.putExtra("value", "2");
+            Log.i("b_name", b_name);
+            goingBack.putExtra("originalName", b_name);
 
-        Intent goingBack = new Intent();
+            setResult(RESULT_OK, goingBack);
 
-        goingBack.putExtra("acct_name",accountName);
-        goingBack.putExtra("acct_type",accountType);
-        goingBack.putExtra("acct_amount",accountAmount);
-        goingBack.putExtra("acct_limit",accountLimit);
-        goingBack.putExtra("value","2");
-        Log.i("b_name", b_name);
-        goingBack.putExtra("originalName",b_name);
-
-        setResult(RESULT_OK, goingBack);
-
-        finish();
-
+            finish();
+        }
 
     }
 

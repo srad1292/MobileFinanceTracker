@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -202,13 +203,17 @@ public class TodaysExpenses extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        LinearLayout expenses = (LinearLayout) rootView.findViewById(R.id.explay);
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(expenses.getWindowToken(),0);
+
         exps.open();
         accts.open();
         e_curs = exps.fetch();
         headingCursor = exps.getAccounts();
         total = 0.0;
         Button expDet = new Button(getActivity());
-        LinearLayout expenses = (LinearLayout) rootView.findViewById(R.id.explay);
+
 
 
         String dy = String.valueOf(cal.get(Calendar.YEAR));
@@ -352,11 +357,29 @@ public class TodaysExpenses extends Fragment {
             }while(headingCursor.moveToNext());
         }
 
+
+        int pre_len = 0;
+        int ind = 0;
+        String good_precision = " ";
+        String precision = String.valueOf(total);
+        if(precision.contains(".")){
+            pre_len = precision.length();
+            ind = precision.indexOf('.');
+            if(pre_len > (ind+3)){
+                good_precision = precision.substring(0,ind+3);
+            }
+            else{
+                good_precision = String.valueOf(total);
+            }
+
+        }
+
+
         TextView display_total = new TextView(getActivity());
         textParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         textParams.setMargins(0,15,0,0);
         display_total.setLayoutParams(textParams);
-        display_total.setText("Total: $" + String.valueOf(total));
+        display_total.setText("Total: $" + good_precision);
         display_total.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         display_total.setGravity(Gravity.CENTER);
         expenses.addView(display_total);
